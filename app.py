@@ -16,6 +16,7 @@ client = MongoClient(os.environ['MONGO_URI'])
 client.admin.command('ping')
 db = client[os.environ.get('MONGO_DB_NAME', 'tutedude_db')]
 submissions = db['submissions']
+todo_items = db['todo_items']
 
 
 @app.route('/')
@@ -52,6 +53,23 @@ def submit():
 @app.route('/success')
 def success():
     return render_template('success.html')
+
+
+@app.route('/submittodoitem', methods=['POST'])
+def submit_todo_item():
+    data = request.form if request.form else (request.get_json(silent=True) or {})
+    item_name = str(data.get('itemName', '')).strip()
+    item_description = str(data.get('itemDescription', '')).strip()
+
+    if not item_name:
+        return jsonify(error='itemName is required.'), 400
+
+    try:
+        todo_items.insert_one({'itemName': item_name, 'itemDescription': item_description})
+    except PyMongoError as e:
+        return jsonify(error=f'Error submitting item: {e}'), 500
+
+    return jsonify(message='Item submitted successfully.'), 201
 
 
 if __name__ == '__main__':
