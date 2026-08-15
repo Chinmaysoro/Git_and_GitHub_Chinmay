@@ -28,6 +28,9 @@
         <label for="item_description">Item Description</label>
         <textarea id="item_description" name="item_description" rows="4">{{ item_description or '' }}</textarea>
 
+        <label for="item_id">Item ID</label>
+        <input type="text" id="item_id" name="item_id" value="{{ item_id or '' }}">
+
         <button type="submit">Add Item</button>
     </form>
 
